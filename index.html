@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Trading Journal</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #020617;
+      padding: 16px 24px;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      border-bottom: 1px solid #1e293b;
+    }
+    .container {
+      max-width: 900px;
+      margin: 24px auto;
+      padding: 16px;
+    }
+    .card {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #020617;
+      color: #e5e7eb;
+    }
+    textarea { resize: vertical; }
+    button {
+      margin-top: 16px;
+      padding: 10px 16px;
+      background: #2563eb;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: #1d4ed8; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid #1e293b;
+      padding: 8px;
+      text-align: center;
+    }
+    th { background: #020617; }
+    .profit { color: #22c55e; }
+    .loss { color: #ef4444; }
+  </style>
+</head>
+<body>
+  <header>📈 My Trading Journal</header>
+
+  <div class="container">
+    <div class="card">
+      <h2>Add New Trade</h2>
+      <label>Date
+        <input type="date" id="date" />
+      </label>
+      <label>Market
+        <select id="market">
+          <option>Forex</option>
+          <option>Crypto</option>
+          <option>Stocks</option>
+          <option>Commodities</option>
+        </select>
+      </label>
+      <label>Pair / Symbol
+        <input type="text" id="symbol" placeholder="XAUUSD, BTCUSDT" />
+      </label>
+      <label>Timeframe
+        <input type="text" id="timeframe" placeholder="15m, 1H" />
+      </label>
+      <label>Trade Type
+        <select id="type">
+          <option>Buy</option>
+          <option>Sell</option>
+        </select>
+      </label>
+      <label>Result (₹ / $)
+        <input type="number" id="result" placeholder="Profit or Loss" />
+      </label>
+      <label>Notes
+        <textarea id="notes" rows="3" placeholder="Setup, mistake, emotion..."></textarea>
+      </label>
+      <button onclick="addTrade()">Add Trade</button>
+    </div>
+
+    <div class="card">
+      <h2>Trade History</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Market</th>
+            <th>Symbol</th>
+            <th>TF</th>
+            <th>Type</th>
+            <th>P/L</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="tradeTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let trades = JSON.parse(localStorage.getItem('trades')) || [];
+
+    function renderTrades() {
+      const table = document.getElementById('tradeTable');
+      table.innerHTML = '';
+      trades.forEach(t => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${t.date}</td>
+          <td>${t.market}</td>
+          <td>${t.symbol}</td>
+          <td>${t.timeframe}</td>
+          <td>${t.type}</td>
+          <td class="${t.result >= 0 ? 'profit' : 'loss'}">${t.result}</td>
+          <td>${t.notes}</td>
+        `;
+        table.appendChild(row);
+      });
+      localStorage.setItem('trades', JSON.stringify(trades));
+    }
+
+    function addTrade() {
+      const trade = {
+        date: document.getElementById('date').value,
+        market: document.getElementById('market').value,
+        symbol: document.getElementById('symbol').value,
+        timeframe: document.getElementById('timeframe').value,
+        type: document.getElementById('type').value,
+        result: Number(document.getElementById('result').value),
+        notes: document.getElementById('notes').value
+      };
+      if (!trade.date || !trade.symbol) return alert('Please fill required fields');
+      trades.push(trade);
+      renderTrades();
+    }
+
+    renderTrades();
+  </script>
+</body>
+</html>
